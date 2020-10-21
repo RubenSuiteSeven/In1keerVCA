@@ -2,7 +2,7 @@
 import pandas as pd;
 
 #Dataframe
-df1 = pd.read_csv("data/course_availability.csv");
+df1 = pd.read_csv("data/location_meta.csv");
 
 #Explore data
 
