@@ -1,8 +1,7 @@
 #Imports
 import pandas as pd;
 import mysql.connector;
-import matplotlib.pyplot as plt;
-import seaborn as sns;
+import datetime;
 
 #Database connection
 mydb = mysql.connector.connect(user='root', password='admin',
@@ -14,36 +13,32 @@ mydb = mysql.connector.connect(user='root', password='admin',
 #Variables
 customer_lat = 52.48918;
 customer_lng = 4.654158;
+
 customer_course = 1;
-date = '10-01-20';
 
-#Dataframes
-locations = pd.read_sql_query("""SELECT * FROM locations""", mydb);
-location_meta = pd.read_sql_query("""SELECT * FROM location_meta""", mydb);
-course_availability = pd.read_sql_query("""SELECT * FROM course_availability""", mydb);
+#Date acceptable range
+start_date = '2020-10-25';
+date = datetime.datetime.strptime(start_date, '%Y-%m-%d');
+end_date = date + datetime.timedelta(days=14);
 
-#Data preparation
-locations = locations[locations.pontifex_active != 1];
-locations = locations[locations.pontifex_ids.isnull()];
-locations = locations[locations.deleted_at.isnull()];
+#Select course availability data
+query = """SELECT * FROM course_availability JOIN availability ON course_availability.availability_id=availability.id JOIN locations l on l.id = availability.locations_id WHERE spots_taken is not null AND spots != 0 AND date between %s AND %s""";
+course_availability = pd.read_sql_query(query, mydb, params=[start_date, end_date]);
 
-course_availability = course_availability[course_availability.pontifex_id.isnull()];
-
-#Data prediction
-course_availability_2 = pd.read_sql_query("""SELECT * FROM course_availability JOIN availability ON course_availability.availability_id=availability.id JOIN locations l on l.id = availability.locations_id WHERE spots_taken is not null order by date""", mydb);
-course_availability_2 = course_availability_2[course_availability_2.pontifex_ids.isnull()];
-
-#Remove pontifex locations
+#Select locations data
 location_df = pd.read_sql_query("""SELECT * FROM locations JOIN location_meta ON locations.id=location_meta.locations_id WHERE pontifex_ids IS NOT NULL AND pontifex_active = 1 AND status = "PUBLISHED" """, mydb);
 query = """SELECT ROUND(6371 * acos(cos(radians(%s)) * cos(radians(lat)) * cos(radians(lng) - radians(%s)) + sin(radians(%s)) * sin(radians(lat)))) as distance,lat,lng,city,locations_id from location_meta HAVING distance<=30  order by distance""";
 closest_locations = pd.read_sql_query(query, mydb, params=[customer_lat, customer_lng, customer_lat]);
 
+#Remove pontifex locations
 for x in location_df.id:
     closest_locations = closest_locations[closest_locations.locations_id != x];
 
-print(closest_locations);
-
+#Create DataFrame with nearest locations
+d = [];
 for x in closest_locations.locations_id:
-    course_availability_2 = course_availability_2[course_availability_2.locations_id != x];
-    print(course_availability_2);
+    b = course_availability[course_availability.locations_id == x];
+    d.append(b);
 
+available_locations = pd.concat(d);
+print(available_locations);
