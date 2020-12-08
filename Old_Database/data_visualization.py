@@ -3,7 +3,7 @@ import pandas as pd;
 import matplotlib.pyplot as plt;
 
 #Dataframes
-course_availability = pd.read_csv("data/course_availability.csv");
+course_availability = pd.read_csv("../data/course_availability.csv");
 locations = pd.read_csv("data/locations.csv");
 location_meta = pd.read_csv("data/location_meta.csv");
 

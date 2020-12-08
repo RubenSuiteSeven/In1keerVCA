@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="wincoop_laravel@localhost" uuid="5054494a-1eb6-41a0-8ce5-28dcf3dbbcb3">
+    <data-source source="LOCAL" name="wincoop_vca@localhost" uuid="cd045397-1b66-40ec-9622-657b24313723">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/wincoop_laravel</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/wincoop_vca</jdbc-url>
     </data-source>
   </component>
 </project>
